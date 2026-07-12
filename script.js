@@ -168,3 +168,20 @@ const spookyObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('#lore, #haunts, #details, #gallery, #contact').forEach(s => {
   spookyObserver.observe(s);
 });
+
+// ---------- TikTok thumbnail fetch (static image only, no player) ----------
+document.querySelectorAll('.clip-tile[data-tt-url]').forEach(async (tile) => {
+  try {
+    const res = await fetch('https://www.tiktok.com/oembed?url=' + encodeURIComponent(tile.dataset.ttUrl));
+    if (!res.ok) throw new Error('oEmbed failed');
+    const data = await res.json();
+    if (data.thumbnail_url) {
+      tile.style.backgroundImage =
+          `linear-gradient(180deg, rgba(21,16,10,.15), rgba(21,16,10,.75)), url('${data.thumbnail_url}')`;
+      tile.style.backgroundSize = 'cover';
+      tile.style.backgroundPosition = 'center';
+    }
+  } catch (err) {
+    // silently falls back to the plain dark tile with play icon
+  }
+});
